@@ -1,0 +1,46 @@
+[nest]
+name = "pancakeswap-v3-bsc"
+chain = "bsc"
+chain_id = 56
+# A keyless public endpoint, so this file is publishable: `nuthatch.toml` is pinned into the nest's
+# content address and must never carry a credential. It is enough to follow the tip. A *backfill*
+# needs archive depth this endpoint does not have - pass your own with `--rpc`, and check it first
+# with `nuthatch doctor --rpc <url>`.
+rpc_urls = [
+    "https://bsc-rpc.publicnode.com",
+]
+schema_version = 1
+block_timestamps = true
+
+# The factory. Same `PoolCreated(address,address,uint24,int24,address)` shape as Uniswap V3's, and
+# the same one-rule discovery - that much *is* a config change.
+[[contracts]]
+alias = "factory"
+address = "0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865"
+start_block = 26956207
+abi = "abis/factory.json"
+
+# The pool template, and the reason this nest is NOT a config change from `uniswap-v3`.
+#
+# PancakeSwap's pool `Swap` carries two extra `uint128` protocol-fee parameters:
+#   uniswap  Swap(address,address,int256,int256,uint160,uint128,int24)
+#   pancake  Swap(address,address,int256,int256,uint160,uint128,int24,uint128,uint128)
+# Different arity means a different topic0, so vendoring `uniswap-v3/abis/pool.json` here would
+# match nothing and seal zero swaps *while reporting a healthy run* - the failure mode this repo
+# cares most about. Verified on-chain rather than by reading: over 300 BSC blocks the Uniswap-shaped
+# topic0 returned 1,111 logs and the nine-parameter one 7,025, and `factory()` on an emitter of each
+# resolves to a different factory (the nine-param one to this address). The pool also has
+# `SetLmPoolEvent`, which Uniswap V3 has no equivalent of.
+#
+# ABI vendored from a PancakeSwap V3 pool on *Ethereum* - the same factory address deploys the same
+# pool bytecode there - because BSC has no Sourcify coverage for it and no keyless Blockscout.
+[[templates]]
+name = "pool"
+abi = "abis/pool.json"
+
+[[factories]]
+watch = "factory"
+event = "PoolCreated"
+child_param = "pool"
+template = "pool"
+start = 26956207
