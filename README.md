@@ -1,6 +1,6 @@
 # pancakeswap-v3-bsc
 
-A [nuthatch](https://github.com/nightswatchhq/nuthatch) nest: **PancakeSwap V3 on BNB Smart Chain**.
+A [nuthatch](https://github.com/nuthatch-org/nuthatch) nest: **PancakeSwap V3 on BNB Smart Chain**.
 
 Concentrated-liquidity pools discovered from the factory, and their swaps, mints and burns.
 
@@ -27,7 +27,7 @@ Indexed blocks **117,399,468 to 117,449,466** and sealed **23,525 events**. Ever
 ## Run it
 
 ```sh
-nuthatch init --from https://github.com/nightswatchhq/pancakeswap-v3-bsc
+nuthatch init --from https://github.com/nuthatch-org/pancakeswap-v3-bsc
 cd pancakeswap-v3-bsc
 nuthatch dev --dir . --backfill 50000 --seal-direct
 nuthatch sql --dir . "SELECT count(*) FROM \"factory__fee_amount_enabled\""
